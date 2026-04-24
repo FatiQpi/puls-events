@@ -37,7 +37,7 @@ Puls-Events est une plateforme spécialisée dans les recommandations culturelle
 ### 1. Cloner le dépôt
 
 ```bash
-git clone <URL_DU_DEPOT>
+git clone https://github.com/FatiQpi/puls-events.git
 cd Puls-Events
 ```
 
