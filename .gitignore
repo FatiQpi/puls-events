@@ -1,0 +1,9 @@
+# Environnements virtuels
+env/
+# Secrets
+.env
+# Fichiers système macOS
+.DS_Store
+# Caches Python
+__pycache__/
+*.pyc
