@@ -7,3 +7,8 @@ env/
 # Caches Python
 __pycache__/
 *.pyc
+
+# Données collectées et générées
+data/raw/
+data/processed/
+data/index/
