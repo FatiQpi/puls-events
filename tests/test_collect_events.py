@@ -1,12 +1,6 @@
-"""Tests unitaires pour le script de collecte d'événements."""
+"""Tests unitaires pour la collecte d'événements (src.collect)."""
 
-import sys
-from pathlib import Path
-
-# Permettre l'import depuis scripts/
-sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
-
-from collect_events import transform_event, _extract_image_url
+from src.collect import transform_event, _extract_image_url
 
 
 # --- Tests pour transform_event ---

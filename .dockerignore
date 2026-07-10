@@ -1,0 +1,20 @@
+# Secrets ne JAMAIS embarquer dans l'image.
+.env
+
+# Environnement virtuel local (lourd, spécifique macOS).
+env/
+venv/
+
+# Données brutes, évaluation, exploration : inutiles au runtime de l'API.
+# (data/index/ n'est PAS exclu : il est copié dans l'image.)
+data/raw/
+data/eval/
+data/exploration/
+
+# Historique de version et caches.
+.git/
+.gitignore
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store

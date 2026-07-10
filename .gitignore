@@ -12,3 +12,5 @@ __pycache__/
 data/raw/
 data/processed/
 data/index/
+data/index_backup/
+data/eval/

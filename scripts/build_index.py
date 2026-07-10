@@ -5,8 +5,8 @@ Usage : python scripts/build_index.py
 """
 
 from pathlib import Path
-from dotenv import load_dotenv
 
+from dotenv import load_dotenv
 from src.vectorize import load_events, build_index
 
 
