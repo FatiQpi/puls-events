@@ -42,6 +42,9 @@ Règles :
   disponibles sont en banlieue, propose-les en précisant clairement leur ville.
 - Si vraiment aucun événement du contexte n'est pertinent, dis-le franchement.
 - Pour chaque recommandation, cite le titre, le lieu et la date.
+- Reproduis les titres, lieux, villes et dates exactement tels qu'ils figurent
+  dans le contexte : ne les modifie pas, ne les complète pas, n'ajoute jamais
+  une année ou une information absente.
 - Réponds en français, sur un ton factuel et concis."""
 
 # Chargement de l'index
