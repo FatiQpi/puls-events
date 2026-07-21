@@ -1,0 +1,9 @@
+# Dépendances de développement et d'évaluation.
+# Volontairement absentes de requirements.txt : l'image Docker ne les installe pas,
+# l'API n'en a pas besoin pour répondre à une requête.
+#
+# Installation : pip install -r requirements-dev.txt
+
+-r requirements.txt
+
+ragas==0.4.3

@@ -16,8 +16,8 @@ import requests
 
 AGENDA_UID = 56500817  # Agenda OpenAgenda Île-de-France
 API_BASE_URL = f"https://api.openagenda.com/v2/agendas/{AGENDA_UID}/events"
-PAGE_SIZE = 100          # maximum autorisé par l'API
-REQUEST_DELAY = 0.3      # pause entre pages, par politesse
+PAGE_SIZE = 100          
+REQUEST_DELAY = 0.3      # pause entre les pages
 RAW_DIR = Path("data/raw")
 
 

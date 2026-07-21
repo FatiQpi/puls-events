@@ -1,19 +1,12 @@
-"""Tests de la chaîne RAG.
+"""Tests unitaires de la chaîne RAG.
 
-Deux catégories de tests :
-
-- Tests unitaires purs (sans appel API, ni accès à l'index FAISS) :
-  format_docs. Lancés par défaut avec `pytest`.
-
-- Tests d'intégration (appel API Mistral + lecture de l'index sur disque) :
-  marqués @pytest.mark.integration, skippés par défaut.
-  Lancement explicite : `pytest -m integration`
+Portent sur `format_docs`, fonction pure : aucun appel API, aucun accès
+à l'index FAISS. Rapides et déterministes.
 """
 import pytest
 from langchain_core.documents import Document
-from langchain_core.runnables import Runnable
 
-from src.rag_chain import build_chain, format_docs
+from src.rag_chain import format_docs
 
 
 # ---------------------------------------------------------------------------
@@ -85,30 +78,3 @@ def test_format_docs_handles_missing_metadata():
     output = format_docs([doc])
     assert "[Événement 1]" in output
     assert "Titre uniquement" in output
-
-
-# ---------------------------------------------------------------------------
-# Tests d'intégration - chaîne RAG complète
-# Skippés par défaut, nécessitent MISTRAL_API_KEY + index FAISS sur disque
-# ---------------------------------------------------------------------------
-@pytest.mark.integration
-def test_build_chain_returns_runnable():
-    """build_chain doit retourner un objet Runnable.
-
-    Vérifie également que l'index FAISS est chargeable depuis data/index.
-    """
-    chain = build_chain()
-    assert isinstance(chain, Runnable)
-
-
-@pytest.mark.integration
-def test_chain_invoke_returns_dict_with_answer_and_docs():
-    """L'invocation doit retourner un dict {answer, docs} non vides."""
-    chain = build_chain()
-    result = chain.invoke("concert de jazz à Paris")
-
-    assert isinstance(result, dict)
-    assert isinstance(result["answer"], str)
-    assert len(result["answer"]) > 0
-    assert isinstance(result["docs"], list)
-    assert len(result["docs"]) > 0

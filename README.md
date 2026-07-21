@@ -24,7 +24,9 @@ Question ─▶ embedding (Mistral) ─▶ recherche de similarité (FAISS)
         prompt augmenté ─▶ LLM (Mistral) ─▶ réponse + sources
 ```
 
-L'indexation suit le même principe en amont : chaque événement collecté est vectorisé une fois (un vecteur par événement, sans chunking — choix issu de l'analyse du corpus, 95 % des textes faisant moins de ~800 tokens) et stocké dans un index FAISS persisté sur disque.
+L'indexation suit le même principe en amont : chaque événement collecté est vectorisé une fois (un vecteur par événement, sans chunking) et stocké dans un index FAISS persisté sur disque.
+
+Le choix de ne pas découper les textes découle d'une mesure sur le corpus (`scripts/analyze_lengths.py`, 1 769 événements) : le texte concaténé d'un événement fait 949 caractères en médiane, 2 447 au 95e centile, 5 141 au maximum, et seuls 2,1 % des événements dépassent 3 000 caractères — très en deçà de la fenêtre d'entrée de `mistral-embed`. Un événement constitue par ailleurs une unité sémantique atomique : le découper produirait des fragments privés de titre, de lieu ou de date, donc inexploitables en restitution.
 
 ## Stack technique
 
@@ -37,7 +39,7 @@ L'indexation suit le même principe en amont : chaque événement collecté est 
 | Modèle de génération | Mistral (`mistral-small-latest`) | Génération des réponses en langage naturel |
 | API REST | FastAPI + Uvicorn | Exposition du système via endpoints HTTP |
 | Conteneurisation | Docker | Portabilité et reproductibilité du déploiement |
-| Tests | pytest | Tests unitaires et d'intégration |
+| Tests | pytest | Tests unitaires et fonctionnels |
 | Évaluation | RAGAS | Mesure de la qualité du RAG (faithfulness, context recall) |
 | Source de données | API Open Agenda | Récupération des événements culturels (agrégateur Île-de-France, uid 56500817) |
 | Gestion des secrets | python-dotenv | Chargement des clés API depuis `.env` |
@@ -56,7 +58,8 @@ puls-events/
 │   ├── build_index.py      #   construit l'index depuis le dernier export
 │   ├── run_api.py          #   lance l'API en local (dev)
 │   ├── ask.py              #   CLI pour interroger la chaîne
-│   └── evaluate_ragas.py   #   évaluation RAGAS
+│   ├── evaluate_ragas.py   #   évaluation RAGAS
+│   └── analyze_lengths.py  #   statistiques de longueur du corpus
 ├── tests/                  # Tests pytest
 ├── data/
 │   ├── raw/                # Exports JSON datés (git-ignoré)
@@ -64,7 +67,8 @@ puls-events/
 ├── Dockerfile
 ├── .dockerignore
 ├── .env.example
-├── requirements.txt
+├── requirements.txt        # dépendances runtime (installées dans l'image Docker)
+├── requirements-dev.txt    # + ragas, pour l'évaluation
 └── README.md
 ```
 
@@ -193,13 +197,22 @@ curl -X POST http://localhost:8000/ask \
 pytest
 ```
 
-Les tests unitaires couvrent la collecte, la vectorisation et la chaîne RAG. Les tests d'intégration (appels réseau réels aux API) sont marqués `@pytest.mark.integration` et **désélectionnés par défaut** pour ne pas dépendre du réseau ni consommer de quota.
+`pytest` exécute 20 tests : 15 tests unitaires sur les fonctions pures (transformation des événements, construction du texte et des métadonnées, formatage du contexte) et 5 tests fonctionnels sur l'API, qui vérifient les contrats des endpoints via le `TestClient` de FastAPI.
+
+Aucun test n'appelle le LLM : ils sont rapides et déterministes. Les tests d'API instancient l'application, donc son cycle de démarrage : l'index (`data/index`) et le fichier `.env` doivent être présents.
 
 ## Évaluation
 
-Le système est évalué avec RAGAS (`python -m scripts.evaluate_ragas`) sur un jeu de questions de référence. Résultats obtenus : **faithfulness 0.826**, **context_recall 0.713**. La métrique `answer_relevancy` n'a pas pu être obtenue (timeout lié au rate limit du tier gratuit).
+L'évaluation nécessite des dépendances supplémentaires, absentes de l'image Docker :
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+Le système est évalué avec RAGAS 0.4.3 (`python -m scripts.evaluate_ragas`) sur un jeu de questions de référence. Résultats obtenus : **faithfulness 0.826**, **context_recall 0.713**. La métrique `answer_relevancy` n'a pas pu être obtenue (timeout lié au rate limit du tier gratuit).
 
 ## Limites et perspectives
 
-- **Rate limit** : le tier gratuit Mistral limite les gros volumes d'embedding (rebuild, évaluation). Piste : embedding par batchs avec back-off, ou tier payant.
+- **Rate limit** : le tier gratuit Mistral limite les gros volumes d'embedding (rebuild, évaluation) et empêche notamment d'obtenir `answer_relevancy`. Contournement : exécution des métriques RAGAS séparément, à faible concurrence. Solution : passage à un tier Mistral payant (non rate-limité).
 - **Persistance** : un `/rebuild` en conteneur ne persiste pas après suppression du conteneur (conséquence du choix d'un index inclus dans l'image).
+- **Dette technique RAGAS** : la version 0.4.3 déprécie `evaluate()` et les imports depuis `ragas.metrics` au profit de `ragas.metrics.collections`, dont la suppression est annoncée pour la v1.0. La migration suppose un LLM-juge compatible `instructor`, la nouvelle API rejetant explicitement les wrappers LangChain utilisés ici pour brancher Mistral.
