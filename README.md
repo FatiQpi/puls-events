@@ -4,7 +4,9 @@ Système de recommandation d'événements culturels basé sur une architecture R
 
 ## Contexte
 
-Puls-Events est une plateforme spécialisée dans les recommandations culturelles personnalisées. Dans le cadre de ce projet, l'objectif est de livrer un POC démontrant la faisabilité technique, la pertinence métier et la performance d'un système RAG appliqué à la recommandation d'événements culturels en Île-de-France.
+Puls-Events est une plateforme spécialisée dans les recommandations culturelles personnalisées. Dans le cadre de ce projet, l'objectif est de livrer un POC démontrant la faisabilité technique, la pertinence métier et la performance d'un système RAG appliqué à la recommandation d'événements culturels.
+
+J'ai choisi de restreindre le périmètre à l'Île-de-France. Ce cadrage n'était pas imposé : Open Agenda y expose un agenda régional agrégé unique, ce qui fournit un corpus cohérent sans travail d'agrégation multi-sources. Cela m'a permis de concentrer l'effort sur l'architecture RAG plutôt que sur la collecte.
 
 ## Objectifs du POC
 
@@ -26,7 +28,7 @@ Question ─▶ embedding (Mistral) ─▶ recherche de similarité (FAISS)
 
 L'indexation suit le même principe en amont : chaque événement collecté est vectorisé une fois (un vecteur par événement, sans chunking) et stocké dans un index FAISS persisté sur disque.
 
-Le choix de ne pas découper les textes découle d'une mesure sur le corpus (`scripts/analyze_lengths.py`, 1 769 événements) : le texte concaténé d'un événement fait 949 caractères en médiane, 2 447 au 95e centile, 5 141 au maximum, et seuls 2,1 % des événements dépassent 3 000 caractères — très en deçà de la fenêtre d'entrée de `mistral-embed`. Un événement constitue par ailleurs une unité sémantique atomique : le découper produirait des fragments privés de titre, de lieu ou de date, donc inexploitables en restitution.
+Le choix de ne pas découper les textes découle d'une mesure sur le corpus (`scripts/analyze_lengths.py`, 1 769 événements) : le texte concaténé d'un événement fait 949 caractères en médiane, 2 447 au 95e centile, 5 141 au maximum, et seuls 2,1 % des événements dépassent 3 000 caractères — très en deçà de la fenêtre d'entrée de `mistral-embed`. Le chunking répond par ailleurs à deux besoins que je n'ai pas ici : faire tenir un document trop long dans la fenêtre du modèle, et cibler le passage pertinent au sein d'un texte traitant de plusieurs sujets. Mes événements sont courts et déjà autonomes — titre, lieu, date et description forment un ensemble cohérent. Les découper reviendrait à casser cette unité sans rien gagner.
 
 ## Stack technique
 
@@ -188,7 +190,7 @@ Exemple d'appel :
 ```bash
 curl -X POST http://localhost:8000/ask \
   -H "Content-Type: application/json" \
-  -d '{"question": "Quels concerts de jazz à Paris ce week-end ?"}'
+  -d '{"question": "Je cherche un concert de jazz"}'
 ```
 
 ## Tests
@@ -203,9 +205,10 @@ Aucun test n'appelle le LLM : ils sont rapides et déterministes. Les tests d'AP
 
 ## Évaluation
 
-L'évaluation nécessite des dépendances supplémentaires, absentes de l'image Docker :
+L'évaluation nécessite une dépendance supplémentaire, absente de l'image Docker :
 
 ```bash
+pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
 
@@ -215,4 +218,3 @@ Le système est évalué avec RAGAS 0.4.3 (`python -m scripts.evaluate_ragas`) s
 
 - **Rate limit** : le tier gratuit Mistral limite les gros volumes d'embedding (rebuild, évaluation) et empêche notamment d'obtenir `answer_relevancy`. Contournement : exécution des métriques RAGAS séparément, à faible concurrence. Solution : passage à un tier Mistral payant (non rate-limité).
 - **Persistance** : un `/rebuild` en conteneur ne persiste pas après suppression du conteneur (conséquence du choix d'un index inclus dans l'image).
-- **Dette technique RAGAS** : la version 0.4.3 déprécie `evaluate()` et les imports depuis `ragas.metrics` au profit de `ragas.metrics.collections`, dont la suppression est annoncée pour la v1.0. La migration suppose un LLM-juge compatible `instructor`, la nouvelle API rejetant explicitement les wrappers LangChain utilisés ici pour brancher Mistral.
