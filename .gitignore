@@ -13,4 +13,5 @@ data/raw/
 data/processed/
 data/index/
 data/index_backup/
-data/eval/
+data/eval/*
+!data/eval/test_set.json

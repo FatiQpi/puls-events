@@ -1,0 +1,86 @@
+[
+  {
+    "id": "q01",
+    "category": "type - musique",
+    "question": "Je cherche un concert de jazz en Île-de-France",
+    "expected_uids": [7169607, 8694022, 4091355, 7188051, 26824468],
+    "reference_answer": "Concerts de jazz disponibles : Concert de jazz au centre Ratel à Bievres, Jazz en Rameau salle Rameau à Versailles,  92 DECIB'ELLES espace Icare à Issy les Moulineaux, Hommage à Miles Auditoruim Claude Debussy à Versailles, Les mardis du Jazz La grande scène au Chesnay-Rocquencourt "
+  },
+  {
+    "id": "q02",
+    "category": "type - exposition",
+    "question": "Une exposition de peinture à Paris",
+    "expected_uids": [93430843, 65961118, 77687606, 95827357],
+    "reference_answer": "Expositions de peinture à Paris : L'âme artistique et urbaine de l'ouest parisien la Collection Courtois au musée d'art et d'histoire à Meudon, Exposition des ateliers artistiques de l'UOV à l'université ouverte de Versailles, Ose le carré à la farine à Versailles, Vitesse de la lumière espace Andrée Chedid à Issy-les-moulineaux"
+  },
+  {
+    "id": "q03",
+    "category": "type - théâtre",
+    "question": "Une pièce de théâtre à voir prochainement",
+    "expected_uids": [27556713, 5956800, 63072939, 77036584],
+    "reference_answer": "Pièce de théâtre à voir prochainement : Théâtre - Chacun sa croix de J.C. Barc La Rotonde à Versailles, Théâtre - Erwin & Grenouille de Bettina Wegenast La Rotonde à Versailles, THIORO - le chaperon rouge sénégalais Théâtre de la Noue à Montreuil, Spectacle d'improvisation théâtrale Le Bateau - Maison de quartier Bernard de Jussieu à Versailles"
+  },
+  {
+    "id": "q04",
+    "category": "type - danse",
+    "question": "Un spectacle de danse contemporaine",
+    "expected_uids": [23308165],
+    "reference_answer": "Spectacle de Danse Classique et contemporaine espace andré malraux à claye souilly"
+  },
+  {
+    "id": "q05",
+    "category": "type - conférence",
+    "question": "Une conférence ou un débat sur un sujet de société",
+    "expected_uids": [43537597,71103631],
+    "reference_answer": "Conférence - débat : féminisme et laïcité espace jeune anne frank à issy-les-moulineaux, Eurêkartes - Mini-conf' et jeux de société café culturel Cool Beans à Versailles"
+  },
+  {
+    "id": "q06",
+    "category": "géographique",
+    "question": "Un événement culturel à Versailles",
+    "expected_uids": [3775570, 85036438, 816222],
+    "reference_answer": "Fête de la musique Avenue de paris à Versailles, Versailles Comedy Club à Sept Lieux, Nocturne musicale dans la galerie des Batailles du Château de Versailles "
+  },
+  {
+    "id": "q07",
+    "category": "multi-critères",
+    "question": "Un concert de musique classique en soirée",
+    "expected_uids": [81266580],
+    "reference_answer": "Orchestre Symphonique Impulsio L'atalante à Mitry-Mory"
+  },
+  {
+    "id": "q08",
+    "category": "multi-critères - gratuit",
+    "question": "Une sortie culturelle gratuite ce week-end",
+    "expected_uids": [87962707, 82475979],
+    "reference_answer": "Visite libre du musée d'art et d'histoire de Meudon, Grands jeux en accès libre au Musée Lambinet à Versailles "
+  },
+  {
+    "id": "q09",
+    "category": "public - jeunesse",
+    "question": "Une activité ou un atelier pour enfants",
+    "expected_uids": [35274630, 81992019, 28426999],
+    "reference_answer": "Atelier artistique duo parent-enfant pour les enfants de 4 à 6 ans à l'atelier gris souris à Versailles, Atelier motricité Ludotheque la ruche à Meudon, Après-midi Découverte des arts du cirque au musée Lambinet 4-6 ans au Musée Lambinet à Versailles"
+  },
+  {
+    "id": "q10",
+    "category": "type - cinéma",
+    "question": "Une projection de film ou un événement cinéma",
+    "expected_uids": [1857795, 51464876],
+    "reference_answer": "Soirée d'ouverture FESTIVAL DE CANNES 2026 Le Sélect à Antony, La musique fête le cinéma Conservatoire à rayonnement régional de Versailles"
+  },
+  {
+    "id": "q11",
+    "category": "hors-sujet - géographie",
+    "question": "Un concert de reggae à Tokyo",
+    "expected_uids": [],
+    "reference_answer": "Aucun événement pertinent n'est disponible dans le contexte."
+  },
+  {
+    "id": "q12",
+    "category": "hors-sujet - type",
+    "question": "Un match de football professionnel",
+    "expected_uids": [],
+    "reference_answer": "Aucun événement pertinent n'est disponible dans le contexte."
+  }
+]
